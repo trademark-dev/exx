@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watch Later</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: white;
+            font-family: "Poppins", sans-serif;
+        }
+        .watch-later-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .inner_inner_showa {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 10px 14px;
+        }
+        .image_wraper_shows {
+            flex: 0 0 auto;
+            min-width: 180px;
+            max-width: 194px;
+            width: auto;
+            transition: transform 0.2s ease;
+        }
+        .image_wraper_shows:hover {
+            transform: translateY(-2px);
+        }
+        .movie-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .movie-details {
+            padding: 10px 0;
+        }
+        .movie-title {
+            font-size: 16px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .movie-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+        .watch-now-btn {
+            display: inline-block;
+            background: #e50914;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            text-decoration: none;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .watch-now-btn:hover {
+            background: #b2070f;
+        }
+        .no-movies {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="watch-later-container">
+        <h1>Watch Later</h1>
+        <div class="inner_inner_showa" id="watchLaterList"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            function getCookie(name) {
+                try {
+                    var nameEQ = name + "=";
+                    var ca = document.cookie.split(';');
+                    for(var i = 0; i < ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                        if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+                    }
+                    return null;
+                } catch(err) {
+                    console.error('Error getting cookie:', err);
+                    return null;
+                }
+            }
+
+            function displayWatchLater() {
+                var watchLaterData = getCookie('watchLater');
+                var $container = $('#watchLaterList');
+                
+                if (!watchLaterData) {
+                    $container.html('<div class="no-movies">No movies in your watch later list</div>');
+                    return;
+                }
+
+                try {
+                    var movies = JSON.parse(watchLaterData);
+                    if (movies.length === 0) {
+                        $container.html('<div class="no-movies">No movies in your watch later list</div>');
+                        return;
+                    }
+
+                    var html = '';
+                    movies.forEach(function(movie) {
+                        html += `
+                            <div class="image_wraper_shows">
+                                <img src="${movie.slider_image}" alt="${movie.slider_title}" class="movie-image">
+                                <div class="movie-details">
+                                    <h3 class="movie-title">${movie.slider_title}</h3>
+                                    <div class="movie-rating">
+                                        ${movie.slider_rating}
+                                        <span>${movie.slider_rating_value}</span>
+                                    </div>
+                                    <a href="${movie.slider_link}" class="watch-now-btn">Watch Now</a>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    $container.html(html);
+                } catch(err) {
+                    console.error('Error parsing watch later data:', err);
+                    $container.html('<div class="no-movies">Error loading watch later list</div>');
+                }
+            }
+
+            displayWatchLater();
+        });
+    </script>
+</body>
+</html>
